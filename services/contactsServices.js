@@ -1,81 +1,50 @@
-import * as fs from "node:fs/promises";
-import path from "node:path";
-import crypto from "node:crypto";
 import HttpError from "../helpers/HttpError.js";
-
-const contactsPath = path.resolve('db', 'contacts.json');
+import {Contact} from "../models/contact.js";
 
 async function listContacts() {
-    try {
-        const contacts = await fs.readFile(contactsPath);
-        return JSON.parse(contacts);
-    } catch (error) {
-        return [];
-    }
+    const contacts = await Contact.find({});
+    return contacts ?? [];
 }
 
 async function getContactById(contactId) {
-    const contacts = await listContacts();
-    const retContact = contacts.find(contact => contact.id === contactId);
-    if (!retContact) {
-        throw HttpError(404, "Not found");
-    }
-    return retContact;
+    const contact = await Contact.findById(contactId);
+    if (contact) return contact;
+    throw HttpError(404, "Not found");
 }
 
 async function removeContact(contactId) {
-    const contacts = await listContacts();
-    const idx = contacts.findIndex(contact => contact.id === contactId);
-    if (idx < 0) {
-        throw HttpError(404, "Not found");
-    }
-
-    const removedItem = contacts.splice(idx, 1)[0];
-    try {
-        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2))
-        return removedItem;
-    } catch (err) {
-        throw HttpError(500, err.message);
-    }
+    const contact = await Contact.findByIdAndDelete(contactId);
+    if (contact) return contact;
+    throw HttpError(404, "Not found");
 }
 
-async function addContact({name, email, phone}) {
-    const contacts = await listContacts();
-    const contact = {id: crypto.randomUUID(), name, email, phone};
-
-    contacts.push(contact);
-    try {
-        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2))
-        return contact;
-    } catch (err) {
-        throw HttpError(500, err.message);
-    }
+async function addContact(reqBody) {
+    const contact = await Contact.create(reqBody);
+    if (contact) return contact;
+    throw HttpError(500, "Can't create contact");
 }
 
-async function updateContact(contactId, updData) {
-    if (!Object.keys(updData).length) {
+async function updateContact(contactId, reqBody) {
+    if (!Object.keys(reqBody).length) {
         throw HttpError(400, "Body must have at least one field");
     }
 
-    const contacts = await listContacts();
-    const idx = contacts.findIndex(contact => contact.id === contactId);
-    if (idx < 0) {
-        throw HttpError(404, "Not found");
-    }
-
-    contacts[idx] = { ...contacts[idx], ...updData };
-    try {
-        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2))
-        return contacts[idx];
-    } catch (err) {
-        throw HttpError(500, err.message);
-    }
-
+    const contact = await Contact.findByIdAndUpdate(contactId, reqBody,{ new: true });
+    if (contact) return contact;
+    throw HttpError(404, "Not found");
 }
+
+async function updateStatusContact(contactId, { favorite }) {
+    const contact = await Contact.findByIdAndUpdate(contactId, {favorite: favorite},{ new: true });
+    if (contact) return contact;
+    throw HttpError(404, "Not found");
+}
+
 export default {
     listContacts,
     getContactById,
     removeContact,
     addContact,
     updateContact,
+    updateStatusContact
 }

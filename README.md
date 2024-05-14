@@ -1,1 +1,2 @@
-# goit-node-rest-api  hw-2
+# Node, MongoDB, RestAPI
+### hw-3
