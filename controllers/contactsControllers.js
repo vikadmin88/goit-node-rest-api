@@ -1,9 +1,14 @@
 import contactsService from "../services/contactsServices.js";
 
-export const getAllContacts = async (req, res) => {
-    res.status(200).json(
-        await contactsService.listContacts()
-    );
+export const getAllContacts = async (req, res, next) => {
+    try {
+        res.status(200).json(
+            await contactsService.listContacts(req)
+        );
+
+    } catch (e) {
+        next(e);
+    }
 };
 
 export const getOneContact = async (req, res, next) => {
@@ -29,7 +34,7 @@ export const deleteContact = async (req, res, next) => {
 export const createContact = async (req, res, next) => {
     try {
         res.status(201).json(
-            await contactsService.addContact(req.body)
+            await contactsService.addContact(req)
         );
     } catch (e) {
         next(e);
@@ -39,7 +44,7 @@ export const createContact = async (req, res, next) => {
 export const updateContact = async (req, res, next) => {
     try {
         res.status(200).json(
-            await contactsService.updateContact(req.params.id, req.body)
+            await contactsService.updateContact(req.params.id, req)
         );
     } catch (e) {
         next(e);

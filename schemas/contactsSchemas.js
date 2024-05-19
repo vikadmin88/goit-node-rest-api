@@ -1,23 +1,23 @@
 import Joi from "joi";
 
 
-export const createSchema = Joi.object({
+export const createShm = Joi.object({
     name: Joi.string().required(),
-    email: Joi.string().required(),
+    email: Joi.string().email().required(),
     phone: Joi.string().required(),
     favorite: Joi.boolean().required()
 });
 
-export const updateSchema = Joi.object({
+export const updateShm = Joi.object({
     name: Joi.string(),
-    email: Joi.string(),
+    email: Joi.string().email(),
     phone: Joi.string(),
     favorite: Joi.boolean()
 });
 
-export const updateFavoriteSchema = Joi.object({
+export const updateFavoriteShm = Joi.object({
     name: Joi.string(),
-    email: Joi.string(),
+    email: Joi.string().email(),
     phone: Joi.string(),
     favorite: Joi.boolean().required()
 });
