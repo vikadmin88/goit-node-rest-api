@@ -13,3 +13,7 @@ export const loginShm = Joi.object({
     password: Joi.string().required(),
 });
 
+export const sbscrUpdateShm = Joi.object({
+    subscription: Joi.string().valid("starter", "pro", "business").required(),
+});
+
