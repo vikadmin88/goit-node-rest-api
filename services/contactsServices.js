@@ -14,17 +14,17 @@ async function listContacts(req, next) {
     }
 }
 
-async function getContactById(contactId, next) {
+async function getContact(req, next) {
     try {
-        return await Contact.findById(contactId);
+        return await Contact.findOne({_id: req.params.id, owner: req.user._id});
     } catch (e) {
         next(e)
     }
 }
 
-async function removeContact(contactId, next) {
+async function removeContact(req, next) {
     try {
-        return await Contact.findByIdAndDelete(contactId);
+        return await Contact.findOneAndDelete({_id: req.params.id, owner: req.user._id});
     } catch (e) {
         next(e);
     }
@@ -33,15 +33,15 @@ async function removeContact(contactId, next) {
 async function addContact(req, next) {
     try {
         return await Contact.create({...req.body, owner: req.user._id});
-
     } catch (e) {
         next(e);
     }
 }
 
-async function updateContact(contactId, req, next) {
+async function updateContact(req, next) {
     try {
-        return await Contact.findByIdAndUpdate(contactId, req.body, {new: true});
+        return await Contact.findOneAndUpdate({_id: req.params.id, owner: req.user._id},
+            req.body, {new: true});
     } catch (e) {
         next(e);
     }
@@ -49,7 +49,7 @@ async function updateContact(contactId, req, next) {
 
 async function updateStatusContact(req, next) {
     try {
-        return await Contact.findByIdAndUpdate({_id: req.params.id},
+        return await Contact.findOneAndUpdate({_id: req.params.id, owner: req.user._id},
             {favorite: req.body.favorite}, {new: true});
     } catch (e) {
         next(e);
@@ -58,7 +58,7 @@ async function updateStatusContact(req, next) {
 
 export default {
     listContacts,
-    getContactById,
+    getContact,
     removeContact,
     addContact,
     updateContact,

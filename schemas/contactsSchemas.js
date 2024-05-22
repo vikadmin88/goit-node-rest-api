@@ -5,7 +5,7 @@ export const createShm = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     phone: Joi.string().required(),
-    favorite: Joi.boolean().required()
+    favorite: Joi.boolean()
 });
 
 export const updateShm = Joi.object({

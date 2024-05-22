@@ -8,7 +8,7 @@ const {PRIVATE_KEY, SALT_ROUNDS = 10, JWT_EXPIRES_IN = "24h"} = process.env;
 async function registerUser(req, next) {
     try {
         const user = await User.findOne({email: req.body.email});
-        if (user) next(HttpError(409, "Email in use"));
+        if (user) throw HttpError(409, "Email in use");
 
         const passwordHash = await bcrypt.hash(req.body.password, Number(SALT_ROUNDS));
         return User.create({...req.body, password: passwordHash});
@@ -20,8 +20,11 @@ async function registerUser(req, next) {
 async function loginUser(req, next) {
     try {
         const user = await User.findOne({email: req.body.email});
-        if (!user || !await bcrypt.compare(req.body.password, user.password)) {
-            next(HttpError(401, "Email or password is wrong"));
+        if (!user) {
+            throw HttpError(401, "Email or password is wrong");
+        }
+        if (!await bcrypt.compare(req.body.password, user.password)) {
+            throw HttpError(401, "Email or password is wrong");
         }
 
         const token = jwt.sign({id: user._id}, PRIVATE_KEY, {expiresIn: JWT_EXPIRES_IN});

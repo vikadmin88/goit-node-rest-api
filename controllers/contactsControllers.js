@@ -13,7 +13,7 @@ export const getAllContacts = async (req, res, next) => {
 };
 
 export const getOneContact = async (req, res, next) => {
-    const contact = await contactsService.getContactById(req.params.id, next);
+    const contact = await contactsService.getContact(req, next);
     if (contact) {
         res.status(200).json(
             contact
@@ -24,7 +24,7 @@ export const getOneContact = async (req, res, next) => {
 };
 
 export const deleteContact = async (req, res, next) => {
-    const contact = await contactsService.removeContact(req.params.id, next);
+    const contact = await contactsService.removeContact(req, next);
     if (contact) {
         res.status(200).json(
             contact
@@ -49,7 +49,7 @@ export const updateContact = async (req, res, next) => {
     if (!Object.keys(req.body).length) {
         next(HttpError(400, "Body must have at least one field"));
     }
-    const contact = await contactsService.updateContact(req.params.id, req, next);
+    const contact = await contactsService.updateContact(req, next);
     if (contact) {
         res.status(200).json(
             contact
