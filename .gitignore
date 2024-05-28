@@ -5,3 +5,7 @@ contacts-orig.json
 .idea
 .vscode
 .DS_Store
+tmp/
+!tmp/.gitkeep
+public/
+!public/**/.gitkeep
