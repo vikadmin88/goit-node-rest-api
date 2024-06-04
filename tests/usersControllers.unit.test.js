@@ -2,13 +2,13 @@ import httpMocks from 'node-mocks-http';
 import { describe, it, expect, afterAll } from '@jest/globals';
 import {mockUserObject} from "./mocks/users";
 
-jest.mock('../services/usersServices');
+jest.mock('../services/authServices');
 
-import usersServices from '../services/usersServices';
-import * as usersControllers from '../controllers/usersControllers';
+import * as authControllers from '../controllers/authControllers';
+import authServices from "../services/authServices.js";
 
-const mockLoginUser = jest.spyOn(usersServices, 'loginUser');
-describe('usersController - unit tests', () => {
+const mockLoginUser = jest.spyOn(authServices, 'loginUser');
+describe('authController - unit tests', () => {
     it('loginUser test', async () => {
         // mock
         const response = httpMocks.createResponse();
@@ -19,7 +19,7 @@ describe('usersController - unit tests', () => {
         });
 
         mockLoginUser.mockImplementation(mockUserObj);
-        await usersControllers.login(request, response);
+        await authControllers.login(request, response);
 
         expect(mockLoginUser).toHaveBeenCalledTimes(1);
         expect(response.statusCode).toEqual(200);
