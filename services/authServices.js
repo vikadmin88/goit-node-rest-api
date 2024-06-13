@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from 'uuid';
 import jwt from "jsonwebtoken";
 import HttpError from "../helpers/HttpError.js";
 import {User} from "../models/user.js";
@@ -11,7 +12,7 @@ async function registerUser(req, next) {
         if (user) throw HttpError(409, "Email in use");
 
         const passwordHash = await bcrypt.hash(req.body.password, Number(SALT_ROUNDS));
-        return User.create({...req.body, password: passwordHash});
+        return User.create({...req.body, password: passwordHash, verificationToken: uuidv4()});
     } catch (e) {
         next(e);
     }
@@ -22,6 +23,9 @@ async function loginUser(req, next) {
         const user = await User.findOne({email: req.body.email});
         if (!user) {
             throw HttpError(401, "Email or password is wrong");
+        }
+        if (!user.verify) {
+            throw HttpError(401, "Email requires confirmation!");
         }
         if (!await bcrypt.compare(req.body.password, user.password)) {
             throw HttpError(401, "Email or password is wrong");

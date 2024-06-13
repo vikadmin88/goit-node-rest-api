@@ -28,7 +28,7 @@ app.use((err, _, res, __) => {
 
 const {DB_HOST, PORT = 3000} = process.env;
 
-mongoose.connect(DB_HOST)
+mongoose.connect(DB_HOST,{ useNewUrlParser: true })
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Server running. Use our API on port: ${PORT}`);

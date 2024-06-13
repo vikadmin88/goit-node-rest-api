@@ -17,7 +17,31 @@ async function updateAvatar(_id, avatarURL, next) {
     }
 }
 
+async function verificationEmail(req, next) {
+    try {
+        const { verificationToken } = req.params;
+        const user = await User.findOne({verificationToken});
+        if (user) {
+            return User.findByIdAndUpdate(user._id, { verify: true, verificationToken: null },{new: true});
+        }
+    } catch (e) {
+        next(e);
+    }
+}
+
+async function resendVerificationEmail(req, next) {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        return user || null;
+    } catch (error) {
+        next(error)
+    }
+}
+
 export default {
     updateSubscription,
-    updateAvatar
+    updateAvatar,
+    verificationEmail,
+    resendVerificationEmail,
 }

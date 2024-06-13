@@ -1,5 +1,7 @@
 import authService from "../services/authServices.js";
 import gravatar from 'gravatar';
+import mailer from "../helpers/mailer.js";
+import HttpError from "../helpers/HttpError.js";
 
 
 export const register = async (req, res, next) => {
@@ -7,10 +9,17 @@ export const register = async (req, res, next) => {
         req.body.avatarURL = gravatar.url(req.body.email, {s: '250', r: 'x', d: 'retro'}, true);
         const user = await authService.registerUser(req, next);
         if (user) {
+            try {
+                await mailer.sendVerificationEmail(user.email, user.verificationToken);
+            } catch (err) {
+                throw HttpError(500, err);
+            }
+
             res.status(201).json({
                 user: {email: user.email, subscription: user.subscription}
             });
         }
+
     } catch (e) {
         next(e);
     }
