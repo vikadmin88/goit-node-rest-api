@@ -11,9 +11,6 @@ usersRouter.patch("/", validateJWT, validateBody(sbscrUpdateShm), ctrl.updateSub
 
 usersRouter.get("/current", validateJWT, ctrl.getCurrent);
 
-usersRouter.get('/verify/:verificationToken', ctrl.verificationEmail);
-usersRouter.post('/verify', validateBody(emailShm), ctrl.resendVerificationEmail);
-
 usersRouter.patch('/avatars', validateJWT, upload.single('avatar'), ctrl.updateAvatar);
 
 export default usersRouter;

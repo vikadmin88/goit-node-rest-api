@@ -1,8 +1,8 @@
-FROM node:alpine
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
+FROM node:20-alpine
+WORKDIR /app
+#COPY package*.json ./
 COPY . .
+RUN npm install
 EXPOSE 3000
 CMD ["node", "app.js"]
 
@@ -12,3 +12,5 @@ CMD ["node", "app.js"]
 # docker run -p 3000:3000 --rm node-rest
 # or
 # docker run --env-file .env -p 3000:3000 --rm node-rest
+# interactive mode
+# docker run -it --env-file .env --entrypoint /bin/sh node-rest

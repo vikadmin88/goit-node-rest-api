@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
+import {v4 as uuidv4} from 'uuid';
 import jwt from "jsonwebtoken";
 import HttpError from "../helpers/HttpError.js";
 import {User} from "../models/user.js";
@@ -46,8 +46,32 @@ async function logOutUser(req, next) {
     }
 }
 
+async function verificationEmail(req, next) {
+    try {
+        const {verificationToken} = req.params;
+        const user = await User.findOne({verificationToken});
+        if (user) {
+            return User.findByIdAndUpdate(user._id, {verify: true, verificationToken: null}, {new: true});
+        }
+    } catch (e) {
+        next(e);
+    }
+}
+
+async function resendVerificationEmail(req, next) {
+    try {
+        const {email} = req.body;
+        const user = await User.findOne({email});
+        return user || null;
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     registerUser,
     loginUser,
     logOutUser,
+    verificationEmail,
+    resendVerificationEmail,
 }
